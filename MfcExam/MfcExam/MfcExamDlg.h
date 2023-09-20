@@ -2,10 +2,13 @@
 // MfcExamDlg.h: 헤더 파일
 //
 #include "CDlgImage.h"	// Add custom class header : 작성한 클래스를 참조합니다.
+#include "CProcess.h"
 
 #pragma once
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console") 
 
+#define IMAGE_WIDTH		640
+#define IMAGE_HEIGHT	480
 
 // CMfcExamDlg 대화 상자
 class CMfcExamDlg : public CDialogEx
@@ -15,7 +18,6 @@ public:
 	CMfcExamDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
 	CDlgImage* m_pDlgImage;	// -> 멤버변수 & 포인터
-	CDlgImage* m_pDlgImageRet;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -38,5 +40,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnDestroy();
-	afx_msg void OnBnClickedBtnTest();
+	afx_msg void OnBnClickedBtnGetData();
+	afx_msg void OnBnClickedBtnCircle();
+	afx_msg void OnBnClickedBtnClr();
+	bool IsInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius);
+
 };

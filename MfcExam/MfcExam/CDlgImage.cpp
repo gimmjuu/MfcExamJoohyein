@@ -30,6 +30,7 @@ void CDlgImage::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDlgImage, CDialogEx)
 	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -41,7 +42,7 @@ BOOL CDlgImage::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
-	InitImage();
+	InitImage(640, 480, 8);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
@@ -59,36 +60,27 @@ void CDlgImage::OnPaint()
 		// 이미지를 화면에 출력합니다.
 		m_Image.Draw(dc, 0, 0);
 	}
-
-	DrawData(&dc);
 }
 
-void CDlgImage::DrawData(CDC* pDC)
+void CDlgImage::DrawCircle(CRect rect)
 {
+	CPaintDC dc(this);
+	CDC* pDC = &dc;
+
 	// 색상 설정
-	CPen pen;
-	pen.CreatePen(PS_SOLID, 5, COLOR_GREEN);
+	CPen pen(PS_SOLID, 2, COLOR_YELLOW);
 	CPen* pOldPen = pDC->SelectObject(&pen);
 
-	// 동일 위치에 원 그리기
-	CRect rect;
-
-	for (int i = 0; i < m_nDataCount; i++) {
-		rect.SetRect(m_ptData[i], m_ptData[i]);
-		rect.InflateRect(2, 2);
-		pDC->Ellipse(rect);
-	}
+	// 원 그리기
+	pDC->Ellipse(rect);
 
 	pDC->SelectObject(pOldPen);
+	pen.DeleteObject();
 }
 
 // CImage를 작성합니다.
-void CDlgImage::InitImage()
+void CDlgImage::InitImage(int nWidth, int nHeight, int nBpp)
 {
-	int nWidth = 640;
-	int nHeight = 480;
-	int nBpp = 8;
-
 	const int kRgb = 256;
 
 	m_Image.Create(nWidth, -nHeight, nBpp);
@@ -107,4 +99,13 @@ void CDlgImage::InitImage()
 	unsigned char* fm = (unsigned char*)m_Image.GetBits();
 
 	memset(fm, 0xff, nWidth * nHeight);
+}
+
+BOOL CDlgImage::OnEraseBkgnd(CDC* pDC)
+{
+	CRect rect;
+	GetClientRect(rect);
+	pDC->FillSolidRect(rect, RGB(0xFF, 0xFF, 0xFF));
+
+	return CDialogEx::OnEraseBkgnd(pDC);
 }

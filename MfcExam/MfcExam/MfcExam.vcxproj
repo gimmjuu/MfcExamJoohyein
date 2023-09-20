@@ -185,6 +185,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CDlgImage.h" />
+    <ClInclude Include="CProcess.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MfcExam.h" />
     <ClInclude Include="MfcExamDlg.h" />
@@ -194,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CDlgImage.cpp" />
+    <ClCompile Include="CProcess.cpp" />
     <ClCompile Include="MfcExam.cpp" />
     <ClCompile Include="MfcExamDlg.cpp" />
     <ClCompile Include="pch.cpp">

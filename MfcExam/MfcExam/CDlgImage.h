@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "afxdialogex.h"
 
-#define MAX_POINT	100
+#define MAX_POINT	10000
 
 // CDlgImage 대화 상자
 
@@ -15,8 +15,6 @@ public:
 
 	CImage m_Image;
 	CWnd* m_pParent;
-	int m_nDataCount = 0;
-	CPoint m_ptData[MAX_POINT];
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -25,11 +23,12 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
-	void DrawData(CDC* pDC);
 
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
-	void InitImage();
+	void InitImage(int nWidth, int nHeight, int nBpp);
 	afx_msg void OnPaint();
+	void DrawCircle(CRect rect);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
