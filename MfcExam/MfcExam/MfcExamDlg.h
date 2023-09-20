@@ -15,6 +15,7 @@ public:
 	CMfcExamDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
 	CDlgImage* m_pDlgImage;	// -> 멤버변수 & 포인터
+	CDlgImage* m_pDlgImageRet;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -36,7 +37,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedBtnDlg();
 	afx_msg void OnDestroy();
-	void CallFuct(int n);
+	afx_msg void OnBnClickedBtnTest();
 };

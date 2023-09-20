@@ -69,8 +69,8 @@ BEGIN_MESSAGE_MAP(CMfcExamDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BTN_DLG, &CMfcExamDlg::OnBnClickedBtnDlg)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BTN_TEST, &CMfcExamDlg::OnBnClickedBtnTest)
 END_MESSAGE_MAP()
 
 
@@ -106,9 +106,17 @@ BOOL CMfcExamDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	MoveWindow(0, 0, 1280, 640);
+
 	m_pDlgImage = new CDlgImage;	// new로 생성한 메모리를 프로그램 종료 시 삭제하지 않으면 메모리 Leak이 발생함
 	m_pDlgImage->Create(IDD_CDlgImage, this);	// this를 작성함으로써 subwnd에서 superwnd에 access 가능함
 	m_pDlgImage->ShowWindow(SW_SHOW);	// 모달리스 창 출력
+	m_pDlgImage->MoveWindow(0, 0, 640, 480);
+
+	m_pDlgImageRet = new CDlgImage;
+	m_pDlgImageRet->Create(IDD_CDlgImage, this);
+	m_pDlgImageRet->ShowWindow(SW_SHOW);
+	m_pDlgImageRet->MoveWindow(640, 0, 640, 480);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -132,8 +140,7 @@ void CMfcExamDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CMfcExamDlg::OnPaint()
 {
-	if (IsIconic())
-	{
+	if (IsIconic()) {
 		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
@@ -149,8 +156,7 @@ void CMfcExamDlg::OnPaint()
 		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
-	else
-	{
+	else {
 		CDialogEx::OnPaint();
 	}
 }
@@ -162,24 +168,51 @@ HCURSOR CMfcExamDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-// CDlgImage를 출력합니다.
-void CMfcExamDlg::OnBnClickedBtnDlg()
-{
-	// m_pDlgImage를 모달리스창으로 출력합니다.
-	m_pDlgImage->ShowWindow(SW_SHOW);
-}
-
-
 void CMfcExamDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
 	// new로 생성한 Dlg 삭제 -> Memory Leak 방지
-	delete m_pDlgImage;
+	if (m_pDlgImage)	delete m_pDlgImage;
+	if (m_pDlgImageRet) delete m_pDlgImageRet;
 }
 
-void CMfcExamDlg::CallFuct(int n)
+void CMfcExamDlg::OnBnClickedBtnTest()
 {
-	int nData = n;
-	cout << n << endl;
+	// CDlgImage 포인터 참조
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();
+
+	int nWidth = m_pDlgImage->m_Image.GetWidth();
+	int nHeight = m_pDlgImage->m_Image.GetHeight();
+	int nPitch = m_pDlgImage->m_Image.GetPitch();
+
+	memset(fm, 0xff, nWidth * nHeight);
+
+	for (int k = 0; k < 100; k++) {
+		// 범위 내 랜덤 좌표 추출
+		int x = rand() % nWidth;
+		int y = rand() % nHeight;
+
+		fm[y * nPitch + x] = 0;	// 해당 좌표를 검정으로 칠한다.
+	}
+
+	// dot 들이 몇개인지 count 해보기
+	int nIndex = 0;
+
+	for (int j = 0; j < nHeight; j++) {
+		for (int i = 0; i < nWidth; i++) {
+			if (fm[j * nPitch + i] == 0) {
+				if (m_pDlgImageRet->m_nDataCount < 100) {
+					m_pDlgImageRet->m_ptData[nIndex].x = i;
+					m_pDlgImageRet->m_ptData[nIndex].y = j;
+					m_pDlgImageRet->m_nDataCount = ++nIndex;
+				}
+			}
+		}
+
+	}
+
+	// memset(fm, 0, 640 * 480);	// memory set (이미지 포인터, 값, 범위) : 해당 포인터에 대해 지정 범위만큼 값을 대입한다.
+	m_pDlgImage->Invalidate();	// Invalidate = OnPaint
+	m_pDlgImageRet->Invalidate();
 }
