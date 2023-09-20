@@ -29,10 +29,10 @@
 #include <afxcontrolbars.h>     // MFC의 리본 및 컨트롤 막대 지원
 
 
-
-
-
-
+// Insert Color Define
+#define COLOR_RED	RGB(0xff, 0x00, 0x00)
+#define COLOR_GREEN	RGB(0x00, 0xff, 0x00)
+#define COLOR_BLUE	RGB(0x00, 0x00, 0xff)
 
 
 

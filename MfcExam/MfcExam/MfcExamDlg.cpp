@@ -186,23 +186,25 @@ void CMfcExamDlg::OnBnClickedBtnTest()
 	int nHeight = m_pDlgImage->m_Image.GetHeight();
 	int nPitch = m_pDlgImage->m_Image.GetPitch();
 
-	memset(fm, 0xff, nWidth * nHeight);
+	// memset(fm, 0xff, nWidth * nHeight);	// 이미지를 흰색으로 초기화
+	memset(fm, 0, nWidth * nHeight);	// 이미지를 검은색으로 초기화
 
-	for (int k = 0; k < 100; k++) {
+	for (int k = 0; k < MAX_POINT; k++) {
 		// 범위 내 랜덤 좌표 추출
 		int x = rand() % nWidth;
 		int y = rand() % nHeight;
 
-		fm[y * nPitch + x] = 0;	// 해당 좌표를 검정으로 칠한다.
+		fm[y * nPitch + x] = rand() % 0xff;	// 밝기 랜덤 지정 (0xff = 255)
 	}
 
-	// dot 들이 몇개인지 count 해보기
+	// left dlg의 dot data를 right dlg로 복사
 	int nIndex = 0;
+	int nTh = 100;
 
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
-			if (fm[j * nPitch + i] == 0) {
-				if (m_pDlgImageRet->m_nDataCount < 100) {
+			if (fm[j * nPitch + i] > nTh) {
+				if (m_pDlgImageRet->m_nDataCount < MAX_POINT) {
 					m_pDlgImageRet->m_ptData[nIndex].x = i;
 					m_pDlgImageRet->m_ptData[nIndex].y = j;
 					m_pDlgImageRet->m_nDataCount = ++nIndex;

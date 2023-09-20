@@ -55,8 +55,8 @@ void CDlgImage::OnPaint()
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	// 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
 
-	// 이미지를 화면에 출력합니다.
 	if (m_Image) {
+		// 이미지를 화면에 출력합니다.
 		m_Image.Draw(dc, 0, 0);
 	}
 
@@ -67,7 +67,7 @@ void CDlgImage::DrawData(CDC* pDC)
 {
 	// 색상 설정
 	CPen pen;
-	pen.CreatePen(PS_SOLID, 5, RGB(0xff, 0, 0));
+	pen.CreatePen(PS_SOLID, 5, COLOR_GREEN);
 	CPen* pOldPen = pDC->SelectObject(&pen);
 
 	// 동일 위치에 원 그리기
