@@ -8,6 +8,9 @@
 #include "MfcExamDlg.h"
 #include "afxdialogex.h"
 
+#include <iostream>
+using namespace std;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -53,6 +56,7 @@ END_MESSAGE_MAP()
 CMfcExamDlg::CMfcExamDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCEXAM_DIALOG, pParent)
 {
+	m_pDlgImage = NULL;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
@@ -65,6 +69,8 @@ BEGIN_MESSAGE_MAP(CMfcExamDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BTN_DLG, &CMfcExamDlg::OnBnClickedBtnDlg)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -100,6 +106,9 @@ BOOL CMfcExamDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_pDlgImage = new CDlgImage;	// new로 생성한 메모리를 프로그램 종료 시 삭제하지 않으면 메모리 Leak이 발생함
+	m_pDlgImage->Create(IDD_CDlgImage, this);	// this를 작성함으로써 subwnd에서 superwnd에 access 가능함
+	m_pDlgImage->ShowWindow(SW_SHOW);	// 모달리스 창 출력
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -153,3 +162,24 @@ HCURSOR CMfcExamDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+// CDlgImage를 출력합니다.
+void CMfcExamDlg::OnBnClickedBtnDlg()
+{
+	// m_pDlgImage를 모달리스창으로 출력합니다.
+	m_pDlgImage->ShowWindow(SW_SHOW);
+}
+
+
+void CMfcExamDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	// new로 생성한 Dlg 삭제 -> Memory Leak 방지
+	delete m_pDlgImage;
+}
+
+void CMfcExamDlg::CallFuct(int n)
+{
+	int nData = n;
+	cout << n << endl;
+}
