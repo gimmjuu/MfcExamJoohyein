@@ -1,4 +1,4 @@
-﻿// CDlgForm.cpp: 구현 파일
+﻿﻿// CDlgForm.cpp: 구현 파일
 //
 
 #include "pch.h"
@@ -184,7 +184,7 @@ void CDlgForm::OnBnClickedBtnEnt()
 	GetDlgItemText(IDC_PREV_VALUE, nFormula);
 
 	double nRet = ParseCStringtoValue(nFormula);
-	
+
 	if (nRet != NULL) {
 		SetDlgItemText(IDC_EDIT_NUM, RstripDoublebyZero(nRet));
 		m_isProcessed = -1;
@@ -214,32 +214,6 @@ CString CDlgForm::RstripDoublebyZero(double nTarget)
 	nRet = nStr.c_str();
 	return nRet;
 }
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <iomanip>
-
-int main() {
-	double myDouble = 3.14000; // 예제로 사용할 double 값
-
-	// double 값을 문자열로 변환
-	std::string str = std::to_string(myDouble);
-
-	// 소수점 아래의 0 제거
-	size_t dotPos = str.find('.');
-	if (dotPos != std::string::npos) {
-		str.erase(str.find_last_not_of('0') + 1, std::string::npos);
-		if (str.back() == '.') {
-			str.pop_back(); // 소수점 이후에 모든 0을 제거한 경우, 소수점도 제거
-		}
-	}
-
-	// 결과 출력
-	std::cout << str << std::endl;
-
-	return 0;
-}
-
 
 
 // CString에서 수와 연산 기호를 분리하여 연산을 수행합니다.
@@ -282,13 +256,13 @@ double CDlgForm::ParseCStringtoValue(CString nTargetString)
 			else {
 				// 스택이 차있으면 우선순위를 확인합니다.
 				CString op = nOpStack.top();
-				
+
 				if (op == "×" || op == "÷") {
 					double y = nNumStack.top();
 					nNumStack.pop();
 					double x = nNumStack.top();
 					nNumStack.pop();
-					
+
 					double nTemp = CalculateValue(x, op, y);
 					if (nTemp == NULL)	return NULL;
 
