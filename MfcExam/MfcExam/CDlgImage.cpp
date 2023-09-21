@@ -15,7 +15,6 @@ IMPLEMENT_DYNAMIC(CDlgImage, CDialogEx)
 CDlgImage::CDlgImage(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CDlgImage, pParent)
 {
-	m_pParent = pParent;
 }
 
 CDlgImage::~CDlgImage()
@@ -30,7 +29,7 @@ void CDlgImage::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CDlgImage, CDialogEx)
 	ON_WM_PAINT()
-	ON_WM_ERASEBKGND()
+//	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -56,23 +55,48 @@ void CDlgImage::OnPaint()
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
 	// 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
 
+	// 이미지를 화면에 출력합니다.
 	if (m_Image) {
-		// 이미지를 화면에 출력합니다.
 		m_Image.Draw(dc, 0, 0);
 	}
 }
 
-void CDlgImage::DrawCircle(CRect rect)
+// CImage에 원과 마커를 그립니다.
+void CDlgImage::DrawCircle(int aX, int aY, int nRadius)
 {
 	CPaintDC dc(this);
 	CDC* pDC = &dc;
+	
+	// 흰색 배경 그리기
+	CRect nBg(-1, -1, 640, 480);
+	pDC->Rectangle(nBg);
 
-	// 색상 설정
+	// 보더 색상 설정
 	CPen pen(PS_SOLID, 2, COLOR_YELLOW);
 	CPen* pOldPen = pDC->SelectObject(&pen);
 
 	// 원 그리기
+	CRect rect(aX, aY, aX + nRadius * 2, aY + nRadius * 2);
 	pDC->Ellipse(rect);
+
+	pDC->SelectObject(pOldPen);
+	pen.DeleteObject();
+
+	DrawCenterMarker(pDC, aX + nRadius, aY + nRadius);
+}
+
+// 원의 중심을 나타내는 크로스헤드 마커를 그립니다.
+void CDlgImage::DrawCenterMarker(CDC* pDC, int nCenterX, int nCenterY)
+{
+	int nTh = 4;
+
+	CPen pen(PS_SOLID, 1, RGB(0x00, 0x00, 0x00));
+	CPen* pOldPen = pDC->SelectObject(&pen);
+
+	pDC->MoveTo(nCenterX - nTh, nCenterY);
+	pDC->LineTo(nCenterX + nTh + 1, nCenterY);
+	pDC->MoveTo(nCenterX, nCenterY - nTh);
+	pDC->LineTo(nCenterX, nCenterY + nTh + 1);
 
 	pDC->SelectObject(pOldPen);
 	pen.DeleteObject();
@@ -99,13 +123,4 @@ void CDlgImage::InitImage(int nWidth, int nHeight, int nBpp)
 	unsigned char* fm = (unsigned char*)m_Image.GetBits();
 
 	memset(fm, 0xff, nWidth * nHeight);
-}
-
-BOOL CDlgImage::OnEraseBkgnd(CDC* pDC)
-{
-	CRect rect;
-	GetClientRect(rect);
-	pDC->FillSolidRect(rect, RGB(0xFF, 0xFF, 0xFF));
-
-	return CDialogEx::OnEraseBkgnd(pDC);
 }

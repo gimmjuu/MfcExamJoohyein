@@ -36,7 +36,7 @@
     <ClInclude Include="CDlgImage.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CProcess.h">
+    <ClInclude Include="CDlgForm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,7 +53,7 @@
     <ClCompile Include="CDlgImage.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="CProcess.cpp">
+    <ClCompile Include="CDlgForm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

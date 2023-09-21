@@ -13,8 +13,7 @@ public:
 	CDlgImage(CWnd* pParent = nullptr);   // 표준 생성자입니다.
 	virtual ~CDlgImage();
 
-	CImage m_Image;
-	CWnd* m_pParent;
+	CImage m_Image;	// 원을 그릴 CImage 멤버 변수입니다.
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -29,6 +28,6 @@ public:
 	virtual BOOL OnInitDialog();
 	void InitImage(int nWidth, int nHeight, int nBpp);
 	afx_msg void OnPaint();
-	void DrawCircle(CRect rect);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	void DrawCircle(int aX, int aY, int nRadius);
+	void DrawCenterMarker(CDC* pDC, int nCenterX, int nCenterY);
 };

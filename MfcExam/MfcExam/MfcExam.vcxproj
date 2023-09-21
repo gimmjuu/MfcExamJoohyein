@@ -184,8 +184,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CDlgForm.h" />
     <ClInclude Include="CDlgImage.h" />
-    <ClInclude Include="CProcess.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MfcExam.h" />
     <ClInclude Include="MfcExamDlg.h" />
@@ -194,8 +194,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CDlgForm.cpp" />
     <ClCompile Include="CDlgImage.cpp" />
-    <ClCompile Include="CProcess.cpp" />
     <ClCompile Include="MfcExam.cpp" />
     <ClCompile Include="MfcExamDlg.cpp" />
     <ClCompile Include="pch.cpp">

@@ -70,9 +70,9 @@ BEGIN_MESSAGE_MAP(CMfcExamDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
-	ON_BN_CLICKED(IDC_BTN_GET_DATA, &CMfcExamDlg::OnBnClickedBtnGetData)
 	ON_BN_CLICKED(IDC_BTN_CIRCLE, &CMfcExamDlg::OnBnClickedBtnCircle)
 	ON_BN_CLICKED(IDC_BTN_CLR, &CMfcExamDlg::OnBnClickedBtnClr)
+	ON_BN_CLICKED(IDC_BTN_CALCULATOR, &CMfcExamDlg::OnBnClickedBtnCalculator)
 END_MESSAGE_MAP()
 
 
@@ -108,12 +108,17 @@ BOOL CMfcExamDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	MoveWindow(0, 0, 840, 600);
+	MoveWindow(0, 0, 1080, 600);
 
-	m_pDlgImage = new CDlgImage;	// new로 생성한 메모리를 프로그램 종료 시 삭제하지 않으면 메모리 Leak이 발생함
-	m_pDlgImage->Create(IDD_CDlgImage, this);	// this를 작성함으로써 subwnd에서 superwnd에 access 가능함
-	m_pDlgImage->ShowWindow(SW_SHOW);	// 모달리스 창 출력
-	m_pDlgImage->MoveWindow(20, 20, IMAGE_WIDTH, IMAGE_HEIGHT);
+	CFont font1;
+	font1.CreatePointFont(140, _T("Verdana"));
+	GetDlgItem(IDC_RADIUS_TITLE)->SetFont(&font1);
+	font1.Detach();
+
+	m_pDlgImage = new CDlgImage;
+	m_pDlgImage->Create(IDD_CDlgImage, this);
+	m_pDlgImage->ShowWindow(SW_SHOW);
+	m_pDlgImage->MoveWindow(40, 40, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -169,7 +174,6 @@ void CMfcExamDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	// new로 생성한 Dlg 삭제 -> Memory Leak 방지
 	if (m_pDlgImage)	delete m_pDlgImage;
 }
 
@@ -180,100 +184,66 @@ void CMfcExamDlg::OnBnClickedBtnCircle()
 	GetDlgItemText(IDC_EDIT_RADIUS, nStr);
 	int nRadius = _ttoi(nStr);
 
-	// ====================================== 원 그리기 공통 ==========================================
-	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();	// CDlgImage 포인터 참조
-
-	int nWidth = m_pDlgImage->m_Image.GetWidth();
-	int nHeight = m_pDlgImage->m_Image.GetHeight();
-
-	// ====================================== 원 그리기 ver 1 ==========================================
-	int aX = rand() % (nWidth - nRadius * 2);
-	int aY = rand() % (nHeight - nRadius * 2);
-
-	CRect rect(aX, aY, aX + nRadius * 2, aY + nRadius * 2);
-
-	m_pDlgImage->Invalidate();	// Display Update
-	m_pDlgImage->DrawCircle(rect);
-
-	// ====================================== 원 그리기 ver 2 ==========================================
-	//int nPitch = m_pDlgImage->m_Image.GetPitch();
-	//memset(fm, 0xff, nWidth * nHeight);	// 이미지를 흰색으로 초기화
-
-	//int aX = rand() % (nWidth - nRadius * 2);
-	//int aY = rand() % (nHeight - nRadius * 2);
-	//int nCenterX = aX + nRadius;
-	//int nCenterY = aY + nRadius;
-
-	//CRect rect(aX, aY, aX + nRadius * 2, aY + nRadius * 2);
-
-	//for (int j = rect.top; j < rect.bottom; j++) {
-	//	for (int i = rect.left; i < rect.right; i++) {
-	//		if (IsInCircle(i, j, nCenterX, nCenterY, nRadius)) {
-	//			if (!IsInCircle(i, j, nCenterX, nCenterY, nRadius - 2)) {
-	//				fm[j * nPitch + i] = 0x00;
-	//			}
-	//			else	fm[j * nPitch + i] = 255;
-	//		}
-	//	}
-	//}
-	// m_pDlgImage->Invalidate();	// Display Update
-}
-
-// 해당 좌표가 원 영역 내부인지 확인합니다.
-bool CMfcExamDlg::IsInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius)
-{
-	bool bRet = false;
-	double dX = i - nCenterX;
-	double dY = j - nCenterY;
-	double dDist = dX * dX + dY * dY;
-
-	if (dDist < nRadius * nRadius) {
-		bRet = true;
+	if (nRadius < 9 || nRadius >= 240) {
+		ClearDlgImage();
+		SetTextOtherInfo(_T("잘못된 입력값입니다."));
+		return;
 	}
 
-	return bRet;
-}
-
-// 무게 중심 구하기
-void CMfcExamDlg::OnBnClickedBtnGetData()
-{
-	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();	// CDlgImage 포인터 참조
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();
 
 	int nWidth = m_pDlgImage->m_Image.GetWidth();
 	int nHeight = m_pDlgImage->m_Image.GetHeight();
 	int nPitch = m_pDlgImage->m_Image.GetPitch();
 
-	int nTh = 0x80;
-	int nSumX = 0;
-	int nSumY = 0;
-	int nCount = 0;
-	CRect rect(0, 0, nWidth, nHeight);
+	int aX = rand() % (nWidth - nRadius * 2);
+	int aY = rand() % (nHeight - nRadius * 2);
 
-	for (int j = rect.top; j < rect.bottom; j++) {
-		for (int i = rect.left; i < rect.right; i++) {
-			if (fm[j * nPitch + i] > nTh) {
-				nSumX += i;
-				nSumY += j;
-				nCount++;
-			}
-		}
-	}
+	m_pDlgImage->Invalidate();
 
-	double dCenterX = (double)nSumX / nCount;
-	double dCenterY = (double)nSumY / nCount;
-
-	cout << dCenterX << "\t" << dCenterY << endl;
+	m_pDlgImage->DrawCircle(aX, aY, nRadius);
+	SetTextCenterInfo(aX + nRadius, aY + nRadius);
 }
 
-// CImage 영역을 초기화합니다.
-void CMfcExamDlg::OnBnClickedBtnClr()
+// 무게 중심 좌표를 Static Text로 출력합니다.
+void CMfcExamDlg::SetTextCenterInfo(int nX, int nY)
 {
-	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();	// CDlgImage 포인터 참조
+	CString nText;
+	nText.Format(_T("현재 원의 무게 중심은 (%d, %d)에 위치합니다."), nX, nY);
+	SetDlgItemText(IDC_STATIC_RESULT, nText);
+}
+
+// 현재 입력값에 대한 정보를 Static Text에 출력합니다.
+void CMfcExamDlg::SetTextOtherInfo(CString nStr)
+{
+	SetDlgItemText(IDC_EDIT_RADIUS, _T(""));
+	SetDlgItemText(IDC_STATIC_RESULT, nStr);
+}
+
+// CImage 영역을 흰색으로 초기화합니다.
+void CMfcExamDlg::ClearDlgImage()
+{
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_Image.GetBits();
 
 	int nWidth = m_pDlgImage->m_Image.GetWidth();
 	int nHeight = m_pDlgImage->m_Image.GetHeight();
 
-	memset(fm, 0xff, nWidth * nHeight);	// 이미지를 흰색으로 초기화
+	memset(fm, 0xff, nWidth * nHeight);
 
-	m_pDlgImage->Invalidate();	// Display Update
+	m_pDlgImage->Invalidate();
+}
+
+// Clear 버튼 클릭 시 화면과 텍스트를 모두 초기화합니다.
+void CMfcExamDlg::OnBnClickedBtnClr()
+{
+	ClearDlgImage();
+	SetTextOtherInfo(_T("현재 입력한 값이 없습니다."));
+}
+
+
+// CDlgForm을 모달창으로 출력합니다.
+void CMfcExamDlg::OnBnClickedBtnCalculator()
+{
+	CDlgForm calculator;
+	calculator.DoModal();
 }
